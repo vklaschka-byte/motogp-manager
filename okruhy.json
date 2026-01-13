@@ -1,0 +1,20 @@
+{
+    "brno": {
+        "nazev": "Automotodrom Brno",
+        "stat": "🇨🇿 ČR",
+        "delka_m": 5403,
+        "rekord_kola": "1:55.687"
+    },
+    "jerez": {
+        "nazev": "Circuito de Jerez",
+        "stat": "🇪🇸 Španělsko",
+        "delka_m": 4423,
+        "rekord_kola": "1:36.170"
+    },
+    "katar": {
+        "nazev": "losail circuit",
+        "stat": "qa katar",
+        "delka_m": 5380,
+        "rekord_kola": "1:53.00"
+    }
+}

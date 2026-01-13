@@ -1,67 +1,74 @@
-def main():
-    print("--- 🏍️ MotoGP RACE MANAGER 🏍️ ---")
-    
-    okruhy = {
-        "brno": {
-            "nazev": "Automotodrom Brno",
-            "stat": "🇨🇿 Česká republika",
-            "delka_m": 5403,
-            "rekord_kola": "1:55.687"
-        },
-        "jerez": {
-            "nazev": "Circuito de Jerez",
-            "stat": "🇪🇸 Španělsko",
-            "delka_m": 4423,
-            "rekord_kola": "1:36.170"
-        },
-        "mugello": {
-            "nazev": "Autodromo del Mugello",
-            "stat": "🇮🇹 Itálie",
-            "delka_m": 5245,
-            "rekord_kola": "1:45.187"
-        },
-        "assen": {
-            "nazev": "TT Circuit Assen",
-            "stat": "🇳🇱 Nizozemsko",
-            "delka_m": 4542,
-            "rekord_kola": "1:31.504"
+import json
+import os
+
+SOUBOR_DATA = "okruhy.json"
+
+def nacist_data():
+    """Načte data ze souboru. Pokud soubor neexistuje, vytvoří základní data."""
+    if not os.path.exists(SOUBOR_DATA):
+        zakladni_okruhy = {
+            "brno": {"nazev": "Automotodrom Brno", "stat": "🇨🇿 ČR", "delka_m": 5403, "rekord_kola": "1:55.687"},
+            "jerez": {"nazev": "Circuito de Jerez", "stat": "🇪🇸 Španělsko", "delka_m": 4423, "rekord_kola": "1:36.170"}
         }
-    }
+        ulozit_data(zakladni_okruhy)
+        return zakladni_okruhy
+    else:
+        with open(SOUBOR_DATA, "r", encoding="utf-8") as f:
+            return json.load(f)
+
+def ulozit_data(data):
+    """Uloží aktuální slovník do souboru JSON."""
+    with open(SOUBOR_DATA, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4, ensure_ascii=False)
+
+def main():
+    print("--- 🏍️ MotoGP MANAGER 2.0 (S pamětí) 🏍️ ---")
+    
+    okruhy = nacist_data()
+    print(f"✅ Načteno {len(okruhy)} okruhů.")
 
     while True:
-        print("\nDOSTUPNÉ OKRUHY:")
-        for klic in okruhy.keys():
-            print(f"- {klic}")
+        print("\nCO CHCEŠ UDĚLAT?")
+        print("1. 🔍 Hledat okruh")
+        print("2. ➕ Přidat nový okruh")
+        print("3. 🏁 Konec")
+        
+        volba = input("Vyber (1-3): ")
 
-        print("-" * 30)
-        vyber = input("Zadej jméno okruhu (nebo 'konec'): ").lower().strip()
-
-        if vyber == "konec":
-            print("🏁 Ukončuji závodní systém. Ahoj!")
+        if volba == "3":
             break
+        
+        elif volba == "1":
+            print("\nDOSTUPNÉ OKRUHY: " + ", ".join(okruhy.keys()))
+            vyber = input("Zadej jméno okruhu: ").lower().strip()
+            
+            if vyber in okruhy:
+                data = okruhy[vyber]
+                print(f"\n📍 {data['nazev']} ({data['stat']})")
+                print(f"📏 Délka: {data['delka_m']} m | ⏱️ Rekord: {data['rekord_kola']}")
+            else:
+                print("❌ Tento okruh neznám.")
 
-        if vyber in okruhy:
-            data = okruhy[vyber] 
+        elif volba == "2":
+            print("\n--- PŘIDÁNÍ NOVÉHO OKRUHU ---")
+            klic = input("Zadej krátké jméno (bez mezer, např. 'katar'): ").lower().strip()
             
-            print(f"\n📍 {data['nazev']} ({data['stat']})")
-            print(f"📏 Délka: {data['delka_m']} metrů")
-            print(f"⏱️ Rekord kola: {data['rekord_kola']}")
-            
-            print("\n--- Telemetrie ---")
-            odpoved = input("Chceš spočítat průměrnou rychlost? (ano/ne): ")
-            
-            if odpoved == "ano":
-                cas_str = input("Zadej čas na kolo v sekundách (např. 115.5): ")
-                try:
-                    cas_sekundy = float(cas_str)
-                    rychlost_kmh = (data['delka_m'] / cas_sekundy) * 3.6
-                    
-                    print(f"🚀 Průměrná rychlost jezdce: {rychlost_kmh:.2f} km/h")
-                except ValueError:
-                    print("❌ Chyba: Musíš zadat číslo (pro desetinné číslo použij tečku).")
-
-        else:
-            print(f"❌ Okruh '{vyber}' v databázi nemám. Zkus to znovu.")
+            if klic in okruhy:
+                print("⚠️ Tento okruh už existuje!")
+            else:
+                nazev = input("Celý název okruhu: ")
+                stat = input("Stát (i s vlaječkou): ")
+                delka = int(input("Délka v metrech: "))
+                rekord = input("Rekord kola (např. 1:53.00): ")
+                okruhy[klic] = {
+                    "nazev": nazev,
+                    "stat": stat,
+                    "delka_m": delka,
+                    "rekord_kola": rekord
+                }
+                
+                ulozit_data(okruhy)
+                print("✅ Uloženo! Okruh je v databázi.")
 
 if __name__ == "__main__":
     main()
